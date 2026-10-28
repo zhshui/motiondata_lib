@@ -16,6 +16,7 @@ def motion_files_under_dir(dataset_dir: Path) -> list[Path]:
         path
         for path in dataset_dir.rglob("*")
         if path.is_file() and path.suffix.lower() in SUPPORTED_MOTION_SUFFIXES
+        and not any(part.startswith(".") for part in path.relative_to(dataset_dir).parts)
     )
 
 

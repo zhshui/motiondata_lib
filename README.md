@@ -74,8 +74,40 @@ Robot profiles live in `robots/*.toml`. A profile defines:
 Currently included:
 
 - `unitree_g1` -> `robots/unitree_g1.toml`
+- `unitree_h1` -> `robots/unitree_h1.toml` (19 DOF, MJCF)
 
 The corresponding URDF and meshes are stored under `robots/resources/unitree_g1/`.
+
+### H1 / SuperMimic quick start
+
+```bash
+uv sync
+./open_h1_editor.sh /path/to/walk1_subject1.npz
+./open_h1_editor.sh /path/to/motion_directory
+```
+
+The launcher accepts a single file or a directory; no argument opens the current
+directory. `.` means the current directory, while `/lafan1` means a directory
+at the filesystem root. Hidden directories such as `.backups` and `.tools` are
+excluded from dataset discovery. Restart the app after adding input files.
+
+The H1 MJCF and meshes are bundled under `robots/resources/unitree_h1/`, with
+their redistribution license. PySide6 6.8 is used for Ubuntu 20.04 compatibility;
+install `libxcb-cursor0` on Ubuntu before launching.
+
+The `supermimic` importer reads `fps`, `joint_names`, `joint_pos`, `body_names`,
+`body_pos_w`, and `body_quat_w` (wxyz). The robot profile's root body determines
+which body supplies the base pose. Select **Trim current** to preserve the
+original SuperMimic layout, including joint velocities, all body states, and
+metadata. Both endpoints are included; the GUI uses 1-based frame numbers.
+Exports default to the source file's directory and cannot overwrite an existing
+file. **Export checked** retains the upstream canonical export format.
+
+Equivalent command without the launcher:
+
+```bash
+uv run python main.py /path/to/motion_directory --robot unitree_h1 --format supermimic
+```
 
 ## Supported Dataset Formats
 

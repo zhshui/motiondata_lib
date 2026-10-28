@@ -433,7 +433,11 @@ class MotionBrowserWindow(QMainWindow):
         suggested_name = (
             f"{self.current_clip.display_name.replace('/', '__')}_trim_{trim_start + 1}_{trim_end + 1}.npz"
         )
-        default_path = str((self.dataset_dir / suggested_name).resolve())
+        output_dir = (
+            self.current_clip.path.resolve().parent
+            if self.current_clip.format_name == "supermimic" else self.dataset_dir
+        )
+        default_path = str((output_dir / suggested_name).resolve())
         destination, _ = QFileDialog.getSaveFileName(
             self,
             "Save trimmed motion clip",
@@ -448,7 +452,11 @@ class MotionBrowserWindow(QMainWindow):
             output_path = output_path.with_suffix(".npz")
 
         try:
-            export_motion_clip_npz(trimmed_clip, output_path)
+            if self.current_clip.format_name == "supermimic":
+                from motiondata_lib.importers.supermimic import export_trim
+                export_trim(self.current_clip.path, output_path, trim_start, trim_end)
+            else:
+                export_motion_clip_npz(trimmed_clip, output_path)
         except Exception as exc:  # noqa: BLE001
             QMessageBox.critical(self, "Trim export failed", str(exc))
             return

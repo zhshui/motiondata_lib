@@ -103,6 +103,10 @@ def apply_default_viewer_scene(spec: mujoco.MjSpec) -> None:
 
 def load_model(robot_profile: RobotProfile, model_path: Path | None = None) -> mujoco.MjModel:
     urdf_path = robot_profile.model_path if model_path is None else model_path.resolve()
+    if urdf_path.suffix.lower() == ".xml":
+        spec = mujoco.MjSpec.from_file(str(urdf_path))
+        apply_default_viewer_scene(spec)
+        return spec.compile()
     runtime_urdf = prepare_runtime_urdf(urdf_path, robot_profile.root_body)
     try:
         spec = mujoco.MjSpec.from_file(str(runtime_urdf))
